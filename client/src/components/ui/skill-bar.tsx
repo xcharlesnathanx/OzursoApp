@@ -8,9 +8,9 @@ export function SkillBar({ value, className = "" }: SkillBarProps) {
   const percentage = (value / 10) * 100;
   
   return (
-    <div className={`w-full bg-background h-2 rounded-full ${className}`}>
+    <div className={`w-full bg-background h-3 rounded-full overflow-hidden border border-border ${className}`}>
       <div 
-        className="skill-bar bg-secondary h-2 rounded-full" 
+        className="skill-bar bg-secondary h-3 rounded-full shadow-sm" 
         style={{ width: `${percentage}%` }}
       />
     </div>
