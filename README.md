@@ -21,6 +21,32 @@ A volleyball player profile management application that leverages Supabase for r
 - Tailwind CSS + shadcn/ui components
 - Vercel deployment
 
+## Supabase Setup
+
+This application uses Supabase as its database. Before running the app, you need to set up your Supabase project:
+
+1. Create a Supabase account and project at [supabase.com](https://supabase.com)
+2. Run the SQL script in `supabase-setup.sql` in the SQL Editor of your Supabase project
+3. Get your Supabase URL and API Key from the API settings section
+4. Add these as environment variables (see below)
+
+For detailed instructions, see the [Supabase Setup Guide](supabase-setup-guide.md).
+
+## Environment Variables
+
+Create a `.env` file in the project root with the following variables:
+
+```
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_KEY=your_supabase_anon_key
+```
+
+For development inside the client folder:
+```
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_KEY=your_supabase_anon_key
+```
+
 ## Development
 
 ```bash
