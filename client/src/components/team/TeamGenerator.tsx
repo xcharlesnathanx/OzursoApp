@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { GeneratedTeams } from "@/components/team/GeneratedTeams";
 import { generateTeams } from "@/lib/utils/generate-teams";
@@ -10,6 +10,8 @@ export function TeamGenerator() {
   const [selectedPlayerIds, setSelectedPlayerIds] = useState<Set<number>>(new Set());
   const [generatedTeams, setGeneratedTeams] = useState<Player[][]>([]);
   const [showTeams, setShowTeams] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showShareableView, setShowShareableView] = useState(false);
   
   const { toast } = useToast();
   
@@ -18,13 +20,25 @@ export function TeamGenerator() {
   });
   
   // Initialize selectedPlayerIds when players are loaded
-  useState(() => {
+  useEffect(() => {
     if (players && players.length > 0 && selectedPlayerIds.size === 0) {
       const newSelectedIds = new Set<number>();
       players.forEach(player => newSelectedIds.add(player.id));
       setSelectedPlayerIds(newSelectedIds);
     }
-  });
+  }, [players, selectedPlayerIds]);
+  
+  // Filter players based on search query
+  const filteredPlayers = useMemo(() => {
+    if (!players) return [];
+    
+    if (!searchQuery.trim()) return players;
+    
+    const query = searchQuery.toLowerCase().trim();
+    return players.filter(player => 
+      player.name.toLowerCase().includes(query)
+    );
+  }, [players, searchQuery]);
   
   const togglePlayerSelection = (playerId: number) => {
     const newSelectedIds = new Set(selectedPlayerIds);
@@ -34,6 +48,17 @@ export function TeamGenerator() {
       newSelectedIds.add(playerId);
     }
     setSelectedPlayerIds(newSelectedIds);
+  };
+  
+  const selectAllPlayers = () => {
+    if (!players) return;
+    const newSelectedIds = new Set<number>();
+    players.forEach(player => newSelectedIds.add(player.id));
+    setSelectedPlayerIds(newSelectedIds);
+  };
+  
+  const deselectAllPlayers = () => {
+    setSelectedPlayerIds(new Set());
   };
   
   const handleGenerateTeams = () => {
@@ -53,6 +78,11 @@ export function TeamGenerator() {
     const teams = generateTeams(selectedPlayers, teamCount);
     setGeneratedTeams(teams);
     setShowTeams(true);
+    setShowShareableView(false); // Reset share view when generating new teams
+  };
+  
+  const toggleShareableView = () => {
+    setShowShareableView(!showShareableView);
   };
   
   return (
@@ -76,6 +106,43 @@ export function TeamGenerator() {
         <div className="mb-6">
           <label className="block text-muted-foreground font-poppins font-medium mb-2">Jogadores Disponíveis</label>
           
+          {/* Search Bar */}
+          <div className="mb-2 relative">
+            <input
+              type="text"
+              placeholder="Buscar jogadores..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full px-4 py-2 pl-10 rounded-lg bg-muted text-foreground border border-gray-700 focus:outline-none focus:border-accent"
+            />
+            <i className="material-icons absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">search</i>
+            
+            {searchQuery && (
+              <button 
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                onClick={() => setSearchQuery("")}
+              >
+                <i className="material-icons">close</i>
+              </button>
+            )}
+          </div>
+          
+          {/* Select/Deselect All Buttons */}
+          <div className="flex space-x-2 mb-2">
+            <button 
+              onClick={selectAllPlayers}
+              className="text-xs px-2 py-1 rounded bg-primary text-foreground hover:bg-primary-dark transition-colors"
+            >
+              Selecionar Todos
+            </button>
+            <button 
+              onClick={deselectAllPlayers}
+              className="text-xs px-2 py-1 rounded bg-muted-foreground text-muted hover:bg-gray-700 transition-colors"
+            >
+              Limpar Seleção
+            </button>
+          </div>
+          
           {isLoading ? (
             <div className="text-center py-4">
               <div className="animate-spin inline-block w-6 h-6 border-4 border-accent border-t-transparent rounded-full"></div>
@@ -84,9 +151,9 @@ export function TeamGenerator() {
             <div className="text-center py-4 text-red-500">
               <p>Erro ao carregar jogadores</p>
             </div>
-          ) : players && players.length > 0 ? (
+          ) : players && filteredPlayers.length > 0 ? (
             <div className="max-h-48 overflow-y-auto bg-muted p-3 rounded-lg border border-gray-700">
-              {players.map(player => (
+              {filteredPlayers.map(player => (
                 <div className="flex items-center mb-2 last:mb-0" key={player.id}>
                   <input 
                     type="checkbox" 
@@ -96,9 +163,13 @@ export function TeamGenerator() {
                     className="w-5 h-5 rounded border-gray-700 text-accent focus:ring-accent bg-muted"
                   />
                   <label htmlFor={`player-${player.id}`} className="ml-2 text-foreground">{player.name}</label>
-                  <span className="ml-auto bg-accent text-accent-foreground text-xs font-bold rounded-full px-1.5 py-0.5">{player.averageScore}</span>
+                  <span className="ml-auto bg-accent text-accent-foreground text-xs font-bold rounded-full px-1.5 py-0.5">{player.averageScore.toFixed(1)}</span>
                 </div>
               ))}
+            </div>
+          ) : players && players.length > 0 && filteredPlayers.length === 0 ? (
+            <div className="text-center py-4 bg-muted rounded-lg border border-gray-700">
+              <p className="text-muted-foreground">Nenhum jogador encontrado com "{searchQuery}"</p>
             </div>
           ) : (
             <div className="text-center py-4 bg-muted rounded-lg border border-gray-700">
@@ -119,7 +190,21 @@ export function TeamGenerator() {
 
       {/* Generated Teams Section */}
       {showTeams && generatedTeams.length > 0 && (
-        <GeneratedTeams teams={generatedTeams} />
+        <div className="mt-6">
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="font-poppins font-semibold text-xl text-foreground">Times Gerados</h3>
+            <button
+              onClick={toggleShareableView}
+              className="px-3 py-1 rounded-lg bg-primary text-foreground text-sm font-medium flex items-center hover:bg-primary-dark"
+            >
+              <i className="material-icons text-sm mr-1">
+                {showShareableView ? "visibility_off" : "share"}
+              </i>
+              {showShareableView ? "Modo Admin" : "Modo Compartilhável"}
+            </button>
+          </div>
+          <GeneratedTeams teams={generatedTeams} hideScores={showShareableView} />
+        </div>
       )}
     </div>
   );
