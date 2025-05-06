@@ -1,0 +1,11 @@
+{
+  "name": "ozurso-api",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "express": "^4.21.2",
+    "cors": "^2.8.5",
+    "@supabase/supabase-js": "^2.49.4"
+  }
+}

@@ -1,6 +1,6 @@
-const express = require('express');
-const { createClient } = require('@supabase/supabase-js');
-const cors = require('cors');
+import express from 'express';
+import { createClient } from '@supabase/supabase-js';
+import cors from 'cors';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -86,4 +86,4 @@ app.delete('/api/players/:id', async (req, res) => {
 });
 
 // Vercel serverless function handler
-module.exports = app;
+export default app;
