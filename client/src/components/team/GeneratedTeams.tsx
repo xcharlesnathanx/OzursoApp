@@ -106,7 +106,7 @@ export function GeneratedTeams({ teams, hideScores = false }: GeneratedTeamsProp
                   alt="Ozurso Logo" 
                   className="h-8 w-8 mr-2 object-contain" 
                 />
-                <h4 className="font-poppins font-bold text-foreground">Time Urso {index + 1}</h4>
+                <h4 className="font-poppins font-bold text-foreground">Time {index + 1}</h4>
               </div>
               
               {!hideScores && (

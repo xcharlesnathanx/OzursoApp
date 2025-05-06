@@ -46,7 +46,7 @@ export function PlayerCard({ player, onViewDetails }: PlayerCardProps) {
               
               {/* Edit Icon Button */}
               <button 
-                className="p-2 rounded-full bg-primary text-foreground hover:bg-primary-dark transition-colors"
+                className="w-10 h-10 rounded-lg bg-primary text-foreground hover:bg-primary-dark transition-colors flex items-center justify-center"
                 onClick={onViewDetails}
                 aria-label="Editar jogador"
               >

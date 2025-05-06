@@ -152,20 +152,63 @@ export function TeamGenerator() {
               <p>Erro ao carregar jogadores</p>
             </div>
           ) : players && filteredPlayers.length > 0 ? (
-            <div className="max-h-48 overflow-y-auto bg-muted p-3 rounded-lg border border-gray-700">
-              {filteredPlayers.map(player => (
-                <div className="flex items-center mb-2 last:mb-0" key={player.id}>
-                  <input 
-                    type="checkbox" 
-                    id={`player-${player.id}`} 
-                    checked={selectedPlayerIds.has(player.id)}
-                    onChange={() => togglePlayerSelection(player.id)}
-                    className="w-5 h-5 rounded border-gray-700 text-accent focus:ring-accent bg-muted"
-                  />
-                  <label htmlFor={`player-${player.id}`} className="ml-2 text-foreground">{player.name}</label>
-                  <span className="ml-auto bg-accent text-accent-foreground text-xs font-bold rounded-full px-1.5 py-0.5">{player.averageScore.toFixed(1)}</span>
-                </div>
-              ))}
+            <div className="max-h-60 overflow-y-auto bg-muted p-3 rounded-lg border border-gray-700">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                {filteredPlayers.map(player => (
+                  <div 
+                    key={player.id}
+                    className={`flex items-center p-2 rounded-lg cursor-pointer transition-colors ${
+                      selectedPlayerIds.has(player.id) 
+                        ? 'bg-primary/30 border border-accent/50' 
+                        : 'bg-card/50 border border-transparent hover:bg-primary/10'
+                    }`}
+                    onClick={() => togglePlayerSelection(player.id)}
+                  >
+                    <span className="relative inline-flex mr-2">
+                      <input 
+                        type="checkbox" 
+                        id={`player-${player.id}`} 
+                        checked={selectedPlayerIds.has(player.id)}
+                        onChange={(e) => e.stopPropagation()}
+                        className="sr-only peer"
+                      />
+                      <span 
+                        className="w-5 h-5 rounded bg-muted border border-gray-700 peer-checked:bg-accent peer-checked:border-accent relative flex items-center justify-center"
+                      >
+                        {selectedPlayerIds.has(player.id) && (
+                          <i className="material-icons text-accent-foreground text-xs">check</i>
+                        )}
+                      </span>
+                    </span>
+                    
+                    <div className="w-7 h-7 rounded-full overflow-hidden bg-primary-light flex items-center justify-center mr-2">
+                      {player.photoUrl ? (
+                        <img 
+                          src={player.photoUrl} 
+                          alt={player.name} 
+                          className="object-cover w-full h-full"
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.parentElement!.innerHTML = '<i class="material-icons text-xl text-muted-foreground">person</i>';
+                          }}
+                        />
+                      ) : (
+                        <i className="material-icons text-xl text-muted-foreground">person</i>
+                      )}
+                    </div>
+                    
+                    <label 
+                      htmlFor={`player-${player.id}`} 
+                      className="text-foreground font-medium flex-1 truncate"
+                    >
+                      {player.name}
+                    </label>
+                    <span className="ml-2 bg-accent text-accent-foreground text-xs font-bold rounded-full px-1.5 py-0.5">
+                      {player.averageScore.toFixed(1)}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           ) : players && players.length > 0 && filteredPlayers.length === 0 ? (
             <div className="text-center py-4 bg-muted rounded-lg border border-gray-700">
