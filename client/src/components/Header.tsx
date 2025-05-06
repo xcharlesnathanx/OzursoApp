@@ -5,11 +5,15 @@ export function Header() {
   const { activeView, toggleView } = useContext(PlayerContext);
   
   return (
-    <header className="bg-primary py-4 px-4 shadow-lg">
+    <header className="bg-primary py-3 px-4 shadow-lg">
       <div className="flex justify-between items-center">
         <div className="flex items-center space-x-2">
-          <i className="material-icons text-accent text-3xl">sports_volleyball</i>
-          <h1 className="text-2xl font-poppins font-bold text-foreground">VolleyBears</h1>
+          <img 
+            src="/ozurso-logo.png" 
+            alt="Ozurso Logo" 
+            className="h-10 w-10 object-contain" 
+          />
+          <h1 className="text-2xl font-poppins font-bold text-foreground">Ozurso</h1>
         </div>
         <div>
           <button

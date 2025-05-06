@@ -1,4 +1,3 @@
-import { SkillBar } from "@/components/ui/skill-bar";
 import type { Player } from "@shared/schema";
 
 interface PlayerCardProps {
@@ -7,24 +6,12 @@ interface PlayerCardProps {
 }
 
 export function PlayerCard({ player, onViewDetails }: PlayerCardProps) {
-  // Find the two highest skills
-  const skillEntries = Object.entries(player.skills);
-  const sortedSkills = [...skillEntries].sort((a, b) => b[1] - a[1]);
-  const topSkills = sortedSkills.slice(0, 2);
-  
-  const skillNames: Record<string, string> = {
-    saque: "Saque",
-    recepcao: "Recepção",
-    passe: "Passe",
-    ataque: "Ataque",
-    bloqueio: "Bloqueio",
-    defesa: "Defesa",
-    mobilidade: "Mobilidade"
-  };
+  // Format average score to show 1 decimal place
+  const formattedScore = player.averageScore.toFixed(1);
   
   return (
     <div className="player-card bg-card rounded-xl overflow-hidden shadow-lg">
-      <div className="flex items-start p-4">
+      <div className="flex items-center p-4">
         {/* Player Photo */}
         <div className="w-16 h-16 rounded-full overflow-hidden bg-primary-light flex items-center justify-center mr-4">
           {player.photoUrl ? (
@@ -45,35 +32,27 @@ export function PlayerCard({ player, onViewDetails }: PlayerCardProps) {
         </div>
 
         <div className="flex-1">
-          <div className="flex justify-between items-start">
+          <div className="flex justify-between items-center">
+            {/* Player Name */}
             <h3 className="font-poppins font-semibold text-xl text-foreground">{player.name}</h3>
-            <span className="bg-accent text-accent-foreground font-poppins font-bold rounded-full px-2 py-1 text-sm flex items-center">
-              <i className="material-icons text-xs mr-1">star</i>
-              <span>{player.averageScore}</span>
-            </span>
-          </div>
-
-          {/* Top skills preview */}
-          <div className="mt-2 space-y-1">
-            {topSkills.map(([skillKey, skillValue]) => (
-              <div key={skillKey}>
-                <div className="flex justify-between items-center text-sm text-muted-foreground">
-                  <span className="font-poppins">{skillNames[skillKey]}</span>
-                  <span>{skillValue}</span>
-                </div>
-                <SkillBar value={skillValue} />
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-3 flex justify-end space-x-2">
-            <button 
-              className="px-3 py-1 rounded-lg bg-primary text-foreground text-sm font-medium flex items-center hover:bg-primary-dark"
-              onClick={onViewDetails}
-            >
-              <i className="material-icons text-sm mr-1">visibility</i>
-              Detalhes
-            </button>
+            
+            {/* Edit Button */}
+            <div className="flex items-center space-x-3">
+              {/* Score Badge */}
+              <span className="bg-accent text-accent-foreground font-poppins font-bold rounded-full px-2 py-1 text-sm flex items-center">
+                <i className="material-icons text-xs mr-1">star</i>
+                <span>{formattedScore}</span>
+              </span>
+              
+              {/* Edit Icon Button */}
+              <button 
+                className="p-2 rounded-full bg-primary text-foreground hover:bg-primary-dark transition-colors"
+                onClick={onViewDetails}
+                aria-label="Editar jogador"
+              >
+                <i className="material-icons">edit</i>
+              </button>
+            </div>
           </div>
         </div>
       </div>
